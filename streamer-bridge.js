@@ -16,11 +16,13 @@ const wss = new WebSocketServer({
   server: server
 });
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws, req) => {
   
+  console.log(ws);
+  console.log(req);
   // Ensure that the URL starts with '/rtmp/', and extract the target RTMP URL.
   let match;
-  if ( !(match = ws.upgradeReq.url.match(/^\/rtmp\/(.*)$/)) ) {
+  if ( !(match = req.url.match(/^\/rtmp\/(.*)$/)) ) {
     ws.terminate(); // No match, reject the connection.
     return;
   }
@@ -89,6 +91,7 @@ wss.on('connection', (ws) => {
   
   // If the client disconnects, stop FFmpeg.
   ws.on('close', (e) => {
+    console.log('Closing wss');
     ffmpeg.kill('SIGINT');
   });
   
